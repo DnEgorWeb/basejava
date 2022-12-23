@@ -12,6 +12,12 @@ public class ArrayStorage {
     }
 
     Resume get(String uuid) {
+        int arrSize = size();
+        for (int i = 0; i < arrSize; i++) {
+            if (storage[i].uuid.equals(uuid)) {
+                return storage[i];
+            }
+        }
         return null;
     }
 
