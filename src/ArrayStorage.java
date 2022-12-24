@@ -4,7 +4,7 @@
 public class ArrayStorage {
     Resume[] storage = new Resume[10000];
 
-    private int size;
+    private int size = 0;
 
     void clear() {
         for (int i = 0; i < size; i++) {
