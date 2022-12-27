@@ -88,7 +88,7 @@ public class ArrayStorage {
     }
 
     /**
-     * @return positive integer if resume is found. Return -1 otherwise.
+     * @return positive integer indicating index of desired resume if resume is found. Return -1 otherwise.
      */
     private int getResumeIndex(String uuid) {
         for (int i = 0; i < size; i++) {
