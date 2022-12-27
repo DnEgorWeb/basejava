@@ -86,6 +86,9 @@ public class ArrayStorage {
         return getResumeIndex(uuid) != -1;
     }
 
+    /**
+     * @return positive integer if resume is found. Return -1 otherwise.
+     */
     private int getResumeIndex(String uuid) {
         for (int i = 0; i < size; i++) {
             if (storage[i].getUuid().equals(uuid)) {
