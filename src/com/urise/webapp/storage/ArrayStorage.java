@@ -32,13 +32,14 @@ public class ArrayStorage {
     }
 
     public void update(Resume resume) {
-        if (!hasResume(resume.getUuid())) {
+        int index = getResumeIndex(resume.getUuid());
+
+        if (index == -1) {
             showWarning("update", "resume with uuid " + resume.getUuid() + " not found in the storage");
             return;
         }
 
-        delete(resume.getUuid());
-        save(resume);
+        storage[index] = resume;
     }
 
     public Resume get(String uuid) {
