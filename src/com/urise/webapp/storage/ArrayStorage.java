@@ -22,6 +22,13 @@ public class ArrayStorage {
         size++;
     }
 
+    public void update(Resume resume) {
+        Resume originResume = get(resume.getUuid());
+        if (originResume != null) {
+            originResume = resume;
+        }
+    }
+
     public Resume get(String uuid) {
         for (int i = 0; i < size; i++) {
             if (storage[i].getUuid().equals(uuid)) {
