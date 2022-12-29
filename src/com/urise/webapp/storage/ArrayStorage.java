@@ -29,7 +29,7 @@ public class ArrayStorage {
     }
 
     public void update(Resume resume) {
-        int index = getResumeIndex(resume.getUuid());
+        int index = getIndex(resume.getUuid());
         if (index == -1) {
             showWarning("update", "resume with uuid " + resume.getUuid() + " not found in the storage");
             return;
@@ -38,7 +38,7 @@ public class ArrayStorage {
     }
 
     public Resume get(String uuid) {
-        int index = getResumeIndex(uuid);
+        int index = getIndex(uuid);
         if (index == -1) {
             showWarning("get", "resume with uuid " + uuid + " not found in the storage");
             return null;
@@ -47,7 +47,7 @@ public class ArrayStorage {
     }
 
     public void delete(String uuid) {
-        int index = getResumeIndex(uuid);
+        int index = getIndex(uuid);
         if (index == -1) {
             showWarning("delete", "resume with uuid " + uuid + " not found in the storage");
             return;
@@ -75,13 +75,13 @@ public class ArrayStorage {
     }
 
     private boolean hasResume(String uuid) {
-        return getResumeIndex(uuid) != -1;
+        return getIndex(uuid) != -1;
     }
 
     /**
      * @return positive integer indicating index of desired resume if resume is found. Return -1 otherwise.
      */
-    private int getResumeIndex(String uuid) {
+    private int getIndex(String uuid) {
         for (int i = 0; i < size; i++) {
             if (storage[i].getUuid().equals(uuid)) {
                 return i;
