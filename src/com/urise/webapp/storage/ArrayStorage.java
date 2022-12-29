@@ -20,15 +20,12 @@ public class ArrayStorage {
     public void save(Resume r) {
         if (hasResume(r.getUuid())) {
             showWarning("save", "resume with uuid " + r.getUuid() + " already exists in the storage");
-            return;
-        }
-        if (size() >= STORAGE_SIZE) {
+        } else if (size() >= STORAGE_SIZE) {
             showWarning("save", "no free space in the storage");
-            return;
+        } else {
+            storage[size()] = r;
+            size++;
         }
-
-        storage[size()] = r;
-        size++;
     }
 
     public void update(Resume resume) {
