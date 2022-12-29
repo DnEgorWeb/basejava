@@ -52,9 +52,7 @@ public class ArrayStorage {
             showWarning("delete", "resume with uuid " + uuid + " not found in the storage");
             return;
         }
-        for (int i = index; i < size - 1; i++) {
-            storage[i] = storage[i + 1];
-        }
+        storage[index] = storage[size - 1];
         storage[size - 1] = null;
         size--;
     }
