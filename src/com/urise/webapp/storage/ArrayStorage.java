@@ -20,10 +20,10 @@ public class ArrayStorage {
     public void save(Resume r) {
         if (hasResume(r.getUuid())) {
             showWarning("save", "resume with uuid " + r.getUuid() + " already exists in the storage");
-        } else if (size() >= STORAGE_SIZE) {
+        } else if (size >= STORAGE_SIZE) {
             showWarning("save", "no free space in the storage");
         } else {
-            storage[size()] = r;
+            storage[size] = r;
             size++;
         }
     }
@@ -61,7 +61,7 @@ public class ArrayStorage {
      * @return array, contains only Resumes in storage (without null)
      */
     public Resume[] getAll() {
-        return Arrays.copyOfRange(storage, 0, size());
+        return Arrays.copyOfRange(storage, 0, size);
     }
 
     public int size() {
