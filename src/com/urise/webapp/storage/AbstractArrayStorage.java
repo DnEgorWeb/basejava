@@ -25,7 +25,7 @@ public abstract class AbstractArrayStorage implements Storage {
         } else if (size >= STORAGE_SIZE) {
             showWarning("save", "no free space in the storage");
         } else {
-            insert(r, index);
+            insertResume(r, index);
             size++;
         }
     }
@@ -45,7 +45,7 @@ public abstract class AbstractArrayStorage implements Storage {
             showWarning("delete", "resume with uuid " + uuid + " not found in the storage");
             return;
         }
-        delete(index);
+        deleteResume(index);
         size--;
     }
 
@@ -68,7 +68,7 @@ public abstract class AbstractArrayStorage implements Storage {
 
     protected abstract int getIndex(String uuid);
 
-    protected abstract void insert(Resume resume, int index);
+    protected abstract void insertResume(Resume resume, int index);
 
-    protected abstract void delete(int index);
+    protected abstract void deleteResume(int index);
 }

@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class SortedArrayStorage extends AbstractArrayStorage {
     @Override
-    protected void insert(Resume resume, int index) {
+    protected void insertResume(Resume resume, int index) {
         int insertIndex = -index - 1;
         for (int i = size; i > insertIndex; i--) {
             storage[i] = storage[i - 1];
@@ -15,7 +15,7 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    public void delete(int index) {
+    public void deleteResume(int index) {
         for (int i = index; i < size - 1; i++) {
             storage[i] = storage[i + 1];
         }
