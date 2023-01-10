@@ -1,5 +1,8 @@
 package com.urise.webapp.storage;
 
+import com.urise.webapp.exception.ExistStorageException;
+import com.urise.webapp.exception.NotExistStorageException;
+import com.urise.webapp.exception.OverflowStorageException;
 import com.urise.webapp.model.Resume;
 
 import java.util.Arrays;
@@ -12,8 +15,7 @@ public abstract class AbstractArrayStorage implements Storage {
     public final Resume get(String uuid) {
         int index = getIndex(uuid);
         if (index < 0) {
-            showWarning("get", "resume with uuid " + uuid + " not found in the storage");
-            return null;
+            throw new NotExistStorageException(uuid);
         }
         return storage[index];
     }
@@ -21,9 +23,9 @@ public abstract class AbstractArrayStorage implements Storage {
     public final void save(Resume r) {
         int index = getIndex(r.getUuid());
         if (index > -1) {
-            showWarning("save", "resume with uuid " + r.getUuid() + " already exists in the storage");
+            throw new ExistStorageException(r.getUuid());
         } else if (size >= STORAGE_SIZE) {
-            showWarning("save", "no free space in the storage");
+            throw new OverflowStorageException(r.getUuid());
         } else {
             insertResume(r, index);
             size++;
@@ -33,8 +35,7 @@ public abstract class AbstractArrayStorage implements Storage {
     public final void update(Resume resume) {
         int index = getIndex(resume.getUuid());
         if (index < 0) {
-            showWarning("update", "resume with uuid " + resume.getUuid() + " not found in the storage");
-            return;
+            throw new NotExistStorageException(resume.getUuid());
         }
         storage[index] = resume;
     }
@@ -42,8 +43,7 @@ public abstract class AbstractArrayStorage implements Storage {
     public final void delete(String uuid) {
         int index = getIndex(uuid);
         if (index < 0) {
-            showWarning("delete", "resume with uuid " + uuid + " not found in the storage");
-            return;
+            throw new NotExistStorageException(uuid);
         }
         deleteResume(index);
         size--;
@@ -60,10 +60,6 @@ public abstract class AbstractArrayStorage implements Storage {
 
     public Resume[] getAll() {
         return Arrays.copyOfRange(storage, 0, size);
-    }
-
-    protected void showWarning(String method, String warning) {
-        System.out.printf("ArrayStorage warning: unable to perform %s operation. Reason: %s\n", method, warning);
     }
 
     protected abstract int getIndex(String uuid);
