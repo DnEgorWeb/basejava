@@ -71,11 +71,7 @@ class AbstractArrayStorageTest {
         void throwsResumeExistsWhenHasSuchResume() {
             Resume r = new Resume();
 
-            try {
-                storage.save(r);
-            } catch (ExistStorageException e) {
-                fail("Too early exist exception");
-            }
+            storage.save(r);
 
             assertThrows(ExistStorageException.class, () -> storage.save(r));
         }
@@ -109,11 +105,11 @@ class AbstractArrayStorageTest {
             assumeTrue(storage.size() == 1);
             assumeTrue(r.equals(storage.get(r.getUuid())));
 
-            Resume newR = new Resume(r.getUuid());
-            storage.update(newR);
+            Resume r1 = new Resume(r.getUuid());
+            storage.update(r1);
 
             assertEquals(1, storage.size());
-            assertEquals(storage.get(r.getUuid()), newR);
+            assertEquals(r1, storage.get(r.getUuid()));
             assertNotSame(r, storage.get(r.getUuid()));
         }
     }
