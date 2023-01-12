@@ -4,16 +4,13 @@ import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.exception.OverflowStorageException;
 import com.urise.webapp.model.Resume;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Constructor;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 abstract class AbstractArrayStorageTest {
@@ -21,12 +18,6 @@ abstract class AbstractArrayStorageTest {
 
     public AbstractArrayStorageTest(Storage storage) {
         this.storage = storage;
-    }
-
-    @AfterEach
-    public void cleanUp() throws Exception {
-        Constructor<? extends Storage> constructor = storage.getClass().getConstructor();
-        storage = constructor.newInstance();
     }
 
     @Nested
