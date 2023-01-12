@@ -67,7 +67,7 @@ abstract class AbstractArrayStorageTest {
         void savesResumeToStorage() {
             Resume r = new Resume();
             storage.save(r);
-            assertEquals(1, storage.size());
+            assertSize(1);
             assertGet(r);
         }
     }
@@ -90,7 +90,7 @@ abstract class AbstractArrayStorageTest {
             assumeTrue(r.equals(storage.get(r.getUuid())));
             Resume r1 = new Resume(r.getUuid());
             storage.update(r1);
-            assertEquals(1, storage.size());
+            assertSize(1);
             assertEquals(r1, storage.get(r.getUuid()));
             assertNotSame(r, storage.get(r.getUuid()));
         }
@@ -112,7 +112,7 @@ abstract class AbstractArrayStorageTest {
             storage.save(r);
             assumeTrue(storage.size() == 1);
             storage.delete(r.getUuid());
-            assertEquals(0, storage.size());
+            assertSize(0);
             assertThrows(NotExistStorageException.class, () -> storage.get(r.getUuid()));
         }
     }
@@ -123,7 +123,7 @@ abstract class AbstractArrayStorageTest {
         @Test
         @DisplayName("Returns 0 when empty")
         void returnsZeroWhenEmpty() {
-            assertEquals(0, storage.size());
+            assertSize(0);
         }
 
         @Test
@@ -132,7 +132,7 @@ abstract class AbstractArrayStorageTest {
             storage.save(new Resume());
             storage.save(new Resume());
             storage.save(new Resume());
-            assertEquals(3, storage.size());
+            assertSize(3);
         }
     }
 
@@ -147,7 +147,7 @@ abstract class AbstractArrayStorageTest {
             storage.save(new Resume());
             assumeTrue(storage.size() == 3);
             storage.clear();
-            assertEquals(0, storage.size());
+            assertSize(0);
         }
     }
 
@@ -176,5 +176,9 @@ abstract class AbstractArrayStorageTest {
 
     private void assertGet(Resume r) {
         assertEquals(r, storage.get(r.getUuid()));
+    }
+
+    private void assertSize(int size) {
+        assertEquals(size, storage.size());
     }
 }
