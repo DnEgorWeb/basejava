@@ -34,7 +34,7 @@ abstract class AbstractArrayStorageTest {
         void returnsResume() {
             Resume r = new Resume();
             storage.save(r);
-            assertEquals(r, storage.get(r.getUuid()));
+            assertGet(r);
         }
     }
 
@@ -68,7 +68,7 @@ abstract class AbstractArrayStorageTest {
             Resume r = new Resume();
             storage.save(r);
             assertEquals(1, storage.size());
-            assertEquals(r, storage.get(r.getUuid()));
+            assertGet(r);
         }
     }
 
@@ -169,8 +169,12 @@ abstract class AbstractArrayStorageTest {
             storage.save(r2);
             Resume[] resumes = storage.getAll();
             assertEquals(2, resumes.length);
-            assertEquals(r1, storage.get(r1.getUuid()));
-            assertEquals(r2, storage.get(r2.getUuid()));
+            assertGet(r1);
+            assertGet(r2);
         }
+    }
+
+    private void assertGet(Resume r) {
+        assertEquals(r, storage.get(r.getUuid()));
     }
 }
