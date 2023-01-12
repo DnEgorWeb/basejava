@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 abstract class AbstractArrayStorageTest {
-    private Storage storage;
+    private final Storage storage;
 
     protected AbstractArrayStorageTest(Storage storage) {
         this.storage = storage;
