@@ -42,6 +42,7 @@ public class ListStorage extends AbstractStorage {
         storage.remove((int) searchKey);
     }
 
+    @Override
     protected Object getSearchKey(String uuid) {
         return storage.indexOf(new Resume(uuid));
     }

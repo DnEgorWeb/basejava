@@ -7,38 +7,38 @@ import com.urise.webapp.model.Resume;
 public abstract class AbstractStorage implements Storage {
     @Override
     public final Resume get(String uuid) {
-        int index = (int) getSearchKey(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        }
-        return doGet(index);
+        return doGet(getExistingSearchKey(uuid));
     }
 
     @Override
     public void save(Resume r) {
-        int index = (int) getSearchKey(r.getUuid());
-        if (index > -1) {
-            throw new ExistStorageException(r.getUuid());
-        }
-        doSave(r, index);
+        doSave(r, getNotExistingSearchKey(r.getUuid()));
     }
 
     @Override
-    public final void update(Resume resume) {
-        int index = (int) getSearchKey(resume.getUuid());
-        if (index < 0) {
-            throw new NotExistStorageException(resume.getUuid());
-        }
-        doUpdate(resume, index);
+    public final void update(Resume r) {
+        doUpdate(r, getExistingSearchKey(r.getUuid()));
     }
 
     @Override
     public final void delete(String uuid) {
+        doDelete(getExistingSearchKey(uuid));
+    }
+
+    private Object getExistingSearchKey(String uuid) {
         int index = (int) getSearchKey(uuid);
         if (index < 0) {
             throw new NotExistStorageException(uuid);
         }
-        doDelete(index);
+        return index;
+    }
+
+    private Object getNotExistingSearchKey(String uuid) {
+        int index = (int) getSearchKey(uuid);
+        if (index > -1) {
+            throw new ExistStorageException(uuid);
+        }
+        return index;
     }
 
     protected abstract Object getSearchKey(String uuid);
