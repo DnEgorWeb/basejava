@@ -43,11 +43,11 @@ public abstract class AbstractStorage implements Storage {
 
     protected abstract Object getSearchKey(String uuid);
 
-    protected abstract Resume doGet(int index);
+    protected abstract Resume doGet(Object searchKey);
 
-    protected abstract void doSave(Resume r, int index);
+    protected abstract void doSave(Resume r, Object searchKey);
 
-    protected abstract void doUpdate(Resume r, int index);
+    protected abstract void doUpdate(Resume r, Object searchKey);
 
-    protected abstract void doDelete(int index);
+    protected abstract void doDelete(Object searchKey);
 }

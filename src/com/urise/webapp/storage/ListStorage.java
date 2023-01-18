@@ -8,7 +8,7 @@ public class ListStorage extends AbstractStorage {
     private final ArrayList<Resume> storage = new ArrayList<>();
 
     @Override
-    public void doSave(Resume r, int index) {
+    public void doSave(Resume r, Object searchKey) {
         storage.add(r);
     }
 
@@ -28,18 +28,18 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected Resume doGet(int index) {
-        return storage.get(index);
+    protected Resume doGet(Object searchKey) {
+        return storage.get((int) searchKey);
     }
 
     @Override
-    protected void doUpdate(Resume resume, int index) {
-        storage.set(index, resume);
+    protected void doUpdate(Resume resume, Object searchKey) {
+        storage.set((int) searchKey, resume);
     }
 
     @Override
-    protected final void doDelete(int index) {
-        storage.remove(index);
+    protected final void doDelete(Object searchKey) {
+        storage.remove((int) searchKey);
     }
 
     protected Object getSearchKey(String uuid) {
