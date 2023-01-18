@@ -42,7 +42,7 @@ public class ListStorage extends AbstractStorage {
         storage.remove(index);
     }
 
-    protected int getIndex(String uuid) {
+    protected Object getSearchKey(String uuid) {
         return storage.indexOf(new Resume(uuid));
     }
 }
