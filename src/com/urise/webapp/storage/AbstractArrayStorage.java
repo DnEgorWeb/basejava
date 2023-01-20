@@ -1,5 +1,7 @@
 package com.urise.webapp.storage;
 
+import com.urise.webapp.exception.ExistStorageException;
+import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.exception.OverflowStorageException;
 import com.urise.webapp.model.Resume;
 
@@ -50,6 +52,24 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     protected final void doDelete(Object searchKey) {
         deleteResume((int) searchKey);
         size--;
+    }
+
+    @Override
+    protected Object getNotExistingSearchKey(String uuid) {
+        int index = (int) getSearchKey(uuid);
+        if (index > -1) {
+            throw new ExistStorageException(uuid);
+        }
+        return index;
+    }
+
+    @Override
+    protected Object getExistingSearchKey(String uuid) {
+        int index = (int) getSearchKey(uuid);
+        if (index < 0) {
+            throw new NotExistStorageException(uuid);
+        }
+        return index;
     }
 
     @Override
