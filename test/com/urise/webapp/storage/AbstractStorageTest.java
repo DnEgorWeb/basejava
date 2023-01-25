@@ -74,7 +74,7 @@ abstract class AbstractStorageTest {
             storage.save(r);
             assumeTrue(storage.size() == 1);
             assumeTrue(r.equals(storage.get(r.getUuid())));
-            Resume r1 = new Resume(r.getUuid());
+            Resume r1 = new Resume(r.getUuid(), "");
             storage.update(r1);
             assertSize(1);
             assertEquals(r1, storage.get(r.getUuid()));
