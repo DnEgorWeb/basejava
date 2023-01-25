@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 abstract class AbstractStorageTest {
@@ -140,7 +141,7 @@ abstract class AbstractStorageTest {
 
     @Nested
     @DisplayName("getAll")
-    class GetAll {
+    class GetAllSorted {
         @Test
         @DisplayName("Returns empty array when no resumes in storage")
         void returnsEmptyArrayWhenNoResumes() {
@@ -148,16 +149,28 @@ abstract class AbstractStorageTest {
         }
 
         @Test
-        @DisplayName("Returns all resumes")
-        void returnsAllResumes() {
-            Resume r1 = new Resume();
-            Resume r2 = new Resume();
-            storage.save(r1);
+        @DisplayName("Returns all resumes sorted")
+        void returnsAllResumesSorted() {
+            String uuid1 = UUID.randomUUID().toString();
+            String uuid2 = UUID.randomUUID().toString();
+            String uuid3 = UUID.randomUUID().toString();
+            String uuid4 = UUID.randomUUID().toString();
+            String uuid5 = UUID.randomUUID().toString();
+            Resume r1 = new Resume(uuid1, "Alan");
+            Resume r2 = new Resume(uuid2, "Brad");
+            Resume r3 = new Resume(uuid3, "Calvin");
+            Resume r4 = new Resume(uuid4, "Calvin");
+            Resume r5 = new Resume(uuid5, "Den");
+            storage.save(r3);
+            storage.save(r5);
             storage.save(r2);
+            storage.save(r1);
+            storage.save(r4);
             List<Resume> resumes = storage.getAllSorted();
-            assertEquals(2, resumes.size());
-            assertGet(r1);
-            assertGet(r2);
+            assertEquals(5, resumes.size());
+            assertEquals(r1, resumes.get(0));
+            assertEquals(r2, resumes.get(1));
+            assertEquals(r5, resumes.get(4));
         }
     }
 
