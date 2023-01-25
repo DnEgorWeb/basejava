@@ -4,6 +4,7 @@ import com.urise.webapp.exception.OverflowStorageException;
 import com.urise.webapp.model.Resume;
 
 import java.util.Arrays;
+import java.util.List;
 
 public abstract class AbstractArrayStorage extends AbstractStorage {
     protected static final int STORAGE_SIZE = 10000;
@@ -32,8 +33,8 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public Resume[] getAll() {
-        return Arrays.copyOfRange(storage, 0, size);
+    public List<Resume> getAllSorted() {
+        return Arrays.asList(storage).subList(0, size);
     }
 
     @Override

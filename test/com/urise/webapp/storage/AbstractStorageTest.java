@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -143,7 +144,7 @@ abstract class AbstractStorageTest {
         @Test
         @DisplayName("Returns empty array when no resumes in storage")
         void returnsEmptyArrayWhenNoResumes() {
-            assertEquals(0, storage.getAll().length);
+            assertEquals(0, storage.getAllSorted().size());
         }
 
         @Test
@@ -153,8 +154,8 @@ abstract class AbstractStorageTest {
             Resume r2 = new Resume();
             storage.save(r1);
             storage.save(r2);
-            Resume[] resumes = storage.getAll();
-            assertEquals(2, resumes.length);
+            List<Resume> resumes = storage.getAllSorted();
+            assertEquals(2, resumes.size());
             assertGet(r1);
             assertGet(r2);
         }
