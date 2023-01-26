@@ -6,10 +6,11 @@ import com.urise.webapp.model.Resume;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AlternativeMapStorage extends AbstractStorage {
 
-    private final HashMap<String, Resume> storage = new HashMap<>();
+    private final Map<String, Resume> storage = new HashMap<>();
 
     @Override
     public void clear() {
