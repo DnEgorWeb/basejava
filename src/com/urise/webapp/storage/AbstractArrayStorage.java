@@ -6,17 +6,17 @@ import com.urise.webapp.model.Resume;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class AbstractArrayStorage extends AbstractStorage {
+public abstract class AbstractArrayStorage extends AbstractStorage<Integer> {
     protected static final int STORAGE_SIZE = 10000;
     protected final Resume[] storage = new Resume[STORAGE_SIZE];
     protected int size = 0;
 
     @Override
-    public final void doSave(Resume r, Object searchKey) {
+    public final void doSave(Resume r, Integer index) {
         if (size >= STORAGE_SIZE) {
             throw new OverflowStorageException(r.getUuid());
         } else {
-            insertResume(r, (int) searchKey);
+            insertResume(r, index);
             size++;
         }
     }
@@ -38,24 +38,23 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    protected Resume doGet(Object searchKey) {
-        return storage[(int) searchKey];
+    protected Resume doGet(Integer index) {
+        return storage[index];
     }
 
     @Override
-    protected void doUpdate(Resume resume, Object searchKey) {
-        storage[(int) searchKey] = resume;
+    protected void doUpdate(Resume resume, Integer index) {
+        storage[index] = resume;
     }
 
     @Override
-    protected final void doDelete(Object searchKey) {
-        deleteResume((int) searchKey);
+    protected final void doDelete(Integer index) {
+        deleteResume(index);
         size--;
     }
 
     @Override
-    protected Boolean isExist(String uuid) {
-        int index = getSearchKey(uuid);
+    protected Boolean isExist(Integer index) {
         return index > -1;
     }
 
