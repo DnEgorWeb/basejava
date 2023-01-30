@@ -22,12 +22,12 @@ abstract class AbstractArrayStorageTest extends AbstractStorageTest {
         void throwsOverflowWhenNoSpace() {
             try {
                 for (int i = 0; i < AbstractArrayStorage.STORAGE_SIZE; i++) {
-                    storage.save(new Resume());
+                    storage.save(new Resume("mock"));
                 }
             } catch (OverflowStorageException e) {
                 fail("Too early storage's overflow");
             }
-            assertThrows(OverflowStorageException.class, () -> storage.save(new Resume()));
+            assertThrows(OverflowStorageException.class, () -> storage.save(new Resume("mock")));
         }
     }
 }

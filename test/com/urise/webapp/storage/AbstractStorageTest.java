@@ -33,7 +33,7 @@ abstract class AbstractStorageTest {
         @Test
         @DisplayName("Returns resume")
         void returnsResume() {
-            Resume r = new Resume();
+            Resume r = new Resume("mock");
             storage.save(r);
             assertGet(r);
         }
@@ -45,7 +45,7 @@ abstract class AbstractStorageTest {
         @Test
         @DisplayName("Throws exists exception when already has resume")
         void throwsResumeExistsWhenHasSuchResume() {
-            Resume r = new Resume();
+            Resume r = new Resume("mock");
             storage.save(r);
             assertThrows(ExistStorageException.class, () -> storage.save(r));
         }
@@ -53,7 +53,7 @@ abstract class AbstractStorageTest {
         @Test
         @DisplayName("Saves resume to the storage")
         void savesResumeToStorage() {
-            Resume r = new Resume();
+            Resume r = new Resume("mock");
             storage.save(r);
             assertSize(1);
             assertGet(r);
@@ -66,13 +66,13 @@ abstract class AbstractStorageTest {
         @Test
         @DisplayName("Throws not exists when no matching resume")
         void throwsNotExistsWhenNoMatchingResume() {
-            assertThrows(NotExistStorageException.class, () -> storage.update(new Resume()));
+            assertThrows(NotExistStorageException.class, () -> storage.update(new Resume("mock")));
         }
 
         @Test
         @DisplayName("Updates resume")
         void updatesResume() {
-            Resume r = new Resume();
+            Resume r = new Resume("mock");
             storage.save(r);
             assumeTrue(storage.size() == 1);
             assumeTrue(r.equals(storage.get(r.getUuid())));
@@ -96,7 +96,7 @@ abstract class AbstractStorageTest {
         @Test
         @DisplayName("Deletes resume")
         void deletesResume() {
-            Resume r = new Resume();
+            Resume r = new Resume("mock");
             storage.save(r);
             assumeTrue(storage.size() == 1);
             storage.delete(r.getUuid());
@@ -117,9 +117,9 @@ abstract class AbstractStorageTest {
         @Test
         @DisplayName("Returns value equal to amount of saved resumes")
         void returnsValueEqualToAmountOfSavedResumes() {
-            storage.save(new Resume());
-            storage.save(new Resume());
-            storage.save(new Resume());
+            storage.save(new Resume("mock"));
+            storage.save(new Resume("mock"));
+            storage.save(new Resume("mock"));
             assertSize(3);
         }
     }
@@ -130,9 +130,9 @@ abstract class AbstractStorageTest {
         @Test
         @DisplayName("Clears storage")
         void clearsStorage() {
-            storage.save(new Resume());
-            storage.save(new Resume());
-            storage.save(new Resume());
+            storage.save(new Resume("mock"));
+            storage.save(new Resume("mock"));
+            storage.save(new Resume("mock"));
             assumeTrue(storage.size() == 3);
             storage.clear();
             assertSize(0);
