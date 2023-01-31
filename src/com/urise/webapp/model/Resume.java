@@ -2,6 +2,7 @@ package com.urise.webapp.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 
 /**
@@ -51,7 +52,7 @@ public class Resume implements Comparable<Resume> {
     }
 
     public Map<Contact, String> getContacts() {
-        return contacts;
+        return new TreeMap<>(contacts);
     }
 
     public void setContacts(Map<Contact, String> contacts) {
@@ -59,7 +60,7 @@ public class Resume implements Comparable<Resume> {
     }
 
     public Map<Section, AbstractSection> getSections() {
-        return sections;
+        return new TreeMap<>(sections);
     }
 
     public void setSections(Map<Section, AbstractSection> sections) {
