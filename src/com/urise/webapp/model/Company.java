@@ -3,20 +3,14 @@ package com.urise.webapp.model;
 import java.util.List;
 
 public class Company {
-    private final String title;
     private final String name;
     private final String website;
     private final List<Period> periods;
 
-    Company(String title, String name, String website, List<Period> periods) {
-        this.title = title;
+    public Company(String name, String website, List<Period> periods) {
         this.name = name;
         this.website = website;
         this.periods = periods;
-    }
-
-    public String getTitle() {
-        return title;
     }
 
     public String getName() {
@@ -34,8 +28,7 @@ public class Company {
     @Override
     public String toString() {
         return "Company{" +
-                "title='" + title + '\'' +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", website='" + website + '\'' +
                 ", periods=" + periods +
                 '}';
@@ -46,11 +39,11 @@ public class Company {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Company company = (Company) o;
-        return title.equals(company.title);
+        return name.equals(company.name);
     }
 
     @Override
     public int hashCode() {
-        return title.hashCode();
+        return name.hashCode();
     }
 }
