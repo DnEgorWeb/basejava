@@ -17,4 +17,11 @@ public enum Section {
     public String getTitle() {
         return title;
     }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "title='" + title + '\'' +
+                '}';
+    }
 }
