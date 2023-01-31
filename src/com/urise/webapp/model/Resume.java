@@ -10,10 +10,10 @@ import java.util.UUID;
 public class Resume implements Comparable<Resume> {
 
     private final String uuid;
-    private final String fullName;
+    private String fullName;
 
-    private final Map<Contact, String> contacts;
-    private final Map<Section, AbstractSection> sections;
+    private Map<Contact, String> contacts;
+    private Map<Section, AbstractSection> sections;
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
@@ -46,12 +46,24 @@ public class Resume implements Comparable<Resume> {
         return fullName;
     }
 
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
     public Map<Contact, String> getContacts() {
         return contacts;
     }
 
+    public void setContacts(Map<Contact, String> contacts) {
+        this.contacts = contacts;
+    }
+
     public Map<Section, AbstractSection> getSections() {
         return sections;
+    }
+
+    public void setSections(Map<Section, AbstractSection> sections) {
+        this.sections = sections;
     }
 
     @Override
