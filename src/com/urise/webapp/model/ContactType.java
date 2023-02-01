@@ -1,6 +1,6 @@
 package com.urise.webapp.model;
 
-public enum Contact {
+public enum ContactType {
     PHONE,
     SKYPE,
     EMAIL,

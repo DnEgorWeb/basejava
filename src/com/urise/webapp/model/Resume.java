@@ -13,8 +13,8 @@ public class Resume implements Comparable<Resume> {
     private final String uuid;
     private String fullName;
 
-    private Map<Contact, String> contacts;
-    private Map<Section, AbstractSection> sections;
+    private Map<ContactType, String> contacts;
+    private Map<SectionType, AbstractSection> sections;
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
@@ -27,7 +27,7 @@ public class Resume implements Comparable<Resume> {
         this.sections = new HashMap<>();
     }
 
-    public Resume(String uuid, String fullName, Map<Contact, String> contacts, Map<Section, AbstractSection> sections) {
+    public Resume(String uuid, String fullName, Map<ContactType, String> contacts, Map<SectionType, AbstractSection> sections) {
         this.uuid = uuid;
         this.fullName = fullName;
         this.contacts = contacts;
@@ -51,19 +51,19 @@ public class Resume implements Comparable<Resume> {
         this.fullName = fullName;
     }
 
-    public Map<Contact, String> getContacts() {
+    public Map<ContactType, String> getContacts() {
         return new TreeMap<>(contacts);
     }
 
-    public void setContacts(Map<Contact, String> contacts) {
+    public void setContacts(Map<ContactType, String> contacts) {
         this.contacts = contacts;
     }
 
-    public Map<Section, AbstractSection> getSections() {
+    public Map<SectionType, AbstractSection> getSections() {
         return new TreeMap<>(sections);
     }
 
-    public void setSections(Map<Section, AbstractSection> sections) {
+    public void setSections(Map<SectionType, AbstractSection> sections) {
         this.sections = sections;
     }
 
