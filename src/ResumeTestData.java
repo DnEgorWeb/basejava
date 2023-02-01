@@ -39,7 +39,9 @@ public class ResumeTestData {
                 new Company("Санкт-Петербургский национальный исследовательский университет информационных технологий, механики и оптики", "http://www.ifmo.ru/", Arrays.asList(new Period(LocalDate.of(1993, 9, 1), LocalDate.of(1996, 7, 1), "Аспирантура (программист С, С++)", null), new Period(LocalDate.of(1987, 9, 1), LocalDate.of(1993, 7, 1), "Инженер (программист Fortran, C)", null))),
                 new Company("Заочная физико-техническая школа при МФТИ", "https://mipt.ru/", Arrays.asList(new Period(LocalDate.of(1984, 9, 1), LocalDate.of(1987, 6, 1), "Закончил с отличием", null)))
         )));
-        Resume r = new Resume(UUID.randomUUID().toString(), "test", contacts, sections);
+        Resume r = new Resume(UUID.randomUUID().toString(), "test");
+        r.setContacts(contacts);
+        r.setSections(sections);
         for (Map.Entry<ContactType, String> c : r.getContacts().entrySet()) {
             System.out.println(c.getKey() + ": " + c.getValue());
         }
