@@ -4,15 +4,16 @@ import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-/**
- * gkislin
- * 22.07.2016
- */
 public abstract class AbstractFileStorage extends AbstractStorage<File> {
-    private File directory;
+    private final File directory;
 
     protected AbstractFileStorage(File directory) {
         Objects.requireNonNull(directory, "directory must not be null");
@@ -27,12 +28,14 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
-
+        for (File file : Objects.requireNonNull(directory.listFiles())) {
+            file.delete();
+        }
     }
 
     @Override
     public int size() {
-        return 0;
+        return Objects.requireNonNull(directory.list()).length;
     }
 
     @Override
@@ -42,7 +45,11 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected void doUpdate(Resume r, File file) {
-
+        try {
+            doWrite(r, file);
+        } catch (IOException e) {
+            throw new StorageException("IO error", file.getName(), e);
+        }
     }
 
     @Override
@@ -64,16 +71,29 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected Resume doGet(File file) {
-        return null;
+        try {
+            try (FileInputStream fis = new FileInputStream(file.getAbsolutePath());
+                 ObjectInputStream ois = new ObjectInputStream(fis)) {
+                return (Resume) ois.readObject();
+            } catch (ClassNotFoundException e) {
+                throw new StorageException("ClassNotFoundException", file.getName(), e);
+            }
+        } catch (IOException e) {
+            throw new StorageException("IO error", file.getName(), e);
+        }
     }
 
     @Override
     protected void doDelete(File file) {
-
+        file.delete();
     }
 
-//    @Override
-//    protected List<Resume> doCopyAll() {
-//        return null;
-//    }
+    @Override
+    protected List<Resume> doGetAll() {
+        File[] files = Objects.requireNonNull(directory.listFiles());
+        return Arrays.stream(files)
+                .filter(File::isFile)
+                .map(this::doGet)
+                .collect(Collectors.toList());
+    }
 }
