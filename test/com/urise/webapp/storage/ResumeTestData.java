@@ -1,13 +1,14 @@
+package com.urise.webapp.storage;
+
 import com.urise.webapp.model.*;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class ResumeTestData {
-    public static void main(String[] args) {
+    public static Resume buildResume(String uuid, String fullName) {
         Map<ContactType, String> contacts = new HashMap<>();
         contacts.put(ContactType.PHONE, "+7(921) 855-0482");
         contacts.put(ContactType.SKYPE, "skype:grigory.kislin");
@@ -39,14 +40,11 @@ public class ResumeTestData {
                 new Company("Санкт-Петербургский национальный исследовательский университет информационных технологий, механики и оптики", "http://www.ifmo.ru/", Arrays.asList(new Period(LocalDate.of(1993, 9, 1), LocalDate.of(1996, 7, 1), "Аспирантура (программист С, С++)", null), new Period(LocalDate.of(1987, 9, 1), LocalDate.of(1993, 7, 1), "Инженер (программист Fortran, C)", null))),
                 new Company("Заочная физико-техническая школа при МФТИ", "https://mipt.ru/", Arrays.asList(new Period(LocalDate.of(1984, 9, 1), LocalDate.of(1987, 6, 1), "Закончил с отличием", null)))
         )));
-        Resume r = new Resume(UUID.randomUUID().toString(), "test");
+
+        Resume r = new Resume(uuid, fullName);
         r.setContacts(contacts);
         r.setSections(sections);
-        for (Map.Entry<ContactType, String> c : r.getContacts().entrySet()) {
-            System.out.println(c.getKey() + ": " + c.getValue());
-        }
-        for (Map.Entry<SectionType, AbstractSection> s : r.getSections().entrySet()) {
-            System.out.println(s.getKey() + ": " + s.getValue());
-        }
+
+        return r;
     }
 }

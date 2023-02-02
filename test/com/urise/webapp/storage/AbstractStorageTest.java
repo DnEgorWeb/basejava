@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 abstract class AbstractStorageTest {
@@ -21,19 +20,28 @@ abstract class AbstractStorageTest {
         this.storage = storage;
     }
 
+    private void assertGet(Resume r) {
+        assertEquals(r, storage.get(r.getUuid()));
+    }
+
+    private void assertSize(int size) {
+        assertEquals(size, storage.size());
+    }
+
     @Nested
     @DisplayName("get")
     class Get {
         @Test
         @DisplayName("Throws not exists when no matching resume")
         void throwsNotExistsWhenNoMatchingResume() {
-            assertThrows(NotExistStorageException.class, () -> storage.get(UUID.randomUUID().toString()));
+            assertThrows(NotExistStorageException.class, () -> storage.get(UUID.randomUUID()
+                    .toString()));
         }
 
         @Test
         @DisplayName("Returns resume")
         void returnsResume() {
-            Resume r = new Resume("mock");
+            Resume r = ResumeTestData.buildResume(UUID.randomUUID().toString(), "mock");
             storage.save(r);
             assertGet(r);
         }
@@ -45,7 +53,7 @@ abstract class AbstractStorageTest {
         @Test
         @DisplayName("Throws exists exception when already has resume")
         void throwsResumeExistsWhenHasSuchResume() {
-            Resume r = new Resume("mock");
+            Resume r = ResumeTestData.buildResume(UUID.randomUUID().toString(), "mock");
             storage.save(r);
             assertThrows(ExistStorageException.class, () -> storage.save(r));
         }
@@ -53,7 +61,7 @@ abstract class AbstractStorageTest {
         @Test
         @DisplayName("Saves resume to the storage")
         void savesResumeToStorage() {
-            Resume r = new Resume("mock");
+            Resume r = ResumeTestData.buildResume(UUID.randomUUID().toString(), "mock");
             storage.save(r);
             assertSize(1);
             assertGet(r);
@@ -66,17 +74,18 @@ abstract class AbstractStorageTest {
         @Test
         @DisplayName("Throws not exists when no matching resume")
         void throwsNotExistsWhenNoMatchingResume() {
-            assertThrows(NotExistStorageException.class, () -> storage.update(new Resume("mock")));
+            assertThrows(NotExistStorageException.class, () -> storage.update(ResumeTestData.buildResume(UUID.randomUUID()
+                    .toString(), "mock")));
         }
 
         @Test
         @DisplayName("Updates resume")
         void updatesResume() {
-            Resume r = new Resume("mock");
+            Resume r = ResumeTestData.buildResume(UUID.randomUUID().toString(), "mock");
             storage.save(r);
             assumeTrue(storage.size() == 1);
             assumeTrue(r.equals(storage.get(r.getUuid())));
-            Resume r1 = new Resume(r.getUuid(), "");
+            Resume r1 = ResumeTestData.buildResume(r.getUuid(), "mock");
             storage.update(r1);
             assertSize(1);
             assertEquals(r1, storage.get(r.getUuid()));
@@ -90,13 +99,14 @@ abstract class AbstractStorageTest {
         @Test
         @DisplayName("Throws not exists when no matching resume")
         void throwsNotExistsWhenNoMatchingResume() {
-            assertThrows(NotExistStorageException.class, () -> storage.delete(UUID.randomUUID().toString()));
+            assertThrows(NotExistStorageException.class, () -> storage.delete(UUID.randomUUID()
+                    .toString()));
         }
 
         @Test
         @DisplayName("Deletes resume")
         void deletesResume() {
-            Resume r = new Resume("mock");
+            Resume r = ResumeTestData.buildResume(UUID.randomUUID().toString(), "mock");
             storage.save(r);
             assumeTrue(storage.size() == 1);
             storage.delete(r.getUuid());
@@ -117,9 +127,9 @@ abstract class AbstractStorageTest {
         @Test
         @DisplayName("Returns value equal to amount of saved resumes")
         void returnsValueEqualToAmountOfSavedResumes() {
-            storage.save(new Resume("mock"));
-            storage.save(new Resume("mock"));
-            storage.save(new Resume("mock"));
+            storage.save(ResumeTestData.buildResume(UUID.randomUUID().toString(), "mock"));
+            storage.save(ResumeTestData.buildResume(UUID.randomUUID().toString(), "mock"));
+            storage.save(ResumeTestData.buildResume(UUID.randomUUID().toString(), "mock"));
             assertSize(3);
         }
     }
@@ -130,9 +140,9 @@ abstract class AbstractStorageTest {
         @Test
         @DisplayName("Clears storage")
         void clearsStorage() {
-            storage.save(new Resume("mock"));
-            storage.save(new Resume("mock"));
-            storage.save(new Resume("mock"));
+            storage.save(ResumeTestData.buildResume(UUID.randomUUID().toString(), "mock"));
+            storage.save(ResumeTestData.buildResume(UUID.randomUUID().toString(), "mock"));
+            storage.save(ResumeTestData.buildResume(UUID.randomUUID().toString(), "mock"));
             assumeTrue(storage.size() == 3);
             storage.clear();
             assertSize(0);
@@ -151,16 +161,11 @@ abstract class AbstractStorageTest {
         @Test
         @DisplayName("Returns all resumes sorted")
         void returnsAllResumesSorted() {
-            String uuid1 = UUID.randomUUID().toString();
-            String uuid2 = UUID.randomUUID().toString();
-            String uuid3 = UUID.randomUUID().toString();
-            String uuid4 = UUID.randomUUID().toString();
-            String uuid5 = UUID.randomUUID().toString();
-            Resume r1 = new Resume(uuid1, "Alan");
-            Resume r2 = new Resume(uuid2, "Brad");
-            Resume r3 = new Resume(uuid3, "Calvin");
-            Resume r4 = new Resume(uuid4, "Calvin");
-            Resume r5 = new Resume(uuid5, "Den");
+            Resume r1 = ResumeTestData.buildResume(UUID.randomUUID().toString(), "Alan");
+            Resume r2 = ResumeTestData.buildResume(UUID.randomUUID().toString(), "Brad");
+            Resume r3 = ResumeTestData.buildResume(UUID.randomUUID().toString(), "Calvin");
+            Resume r4 = ResumeTestData.buildResume(UUID.randomUUID().toString(), "Calvin");
+            Resume r5 = ResumeTestData.buildResume(UUID.randomUUID().toString(), "Den");
             storage.save(r3);
             storage.save(r5);
             storage.save(r2);
@@ -172,13 +177,5 @@ abstract class AbstractStorageTest {
             assertEquals(r2, resumes.get(1));
             assertEquals(r5, resumes.get(4));
         }
-    }
-
-    private void assertGet(Resume r) {
-        assertEquals(r, storage.get(r.getUuid()));
-    }
-
-    private void assertSize(int size) {
-        assertEquals(size, storage.size());
     }
 }
