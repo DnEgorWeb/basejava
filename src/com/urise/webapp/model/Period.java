@@ -1,6 +1,7 @@
 package com.urise.webapp.model;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Period {
     private final LocalDate startDate;
@@ -9,6 +10,8 @@ public class Period {
     private final String description;
 
     public Period(LocalDate startDate, LocalDate endDate, String title, String description) {
+        Objects.requireNonNull(startDate, "startDate must not be null");
+        Objects.requireNonNull(title, "title must not be null");
         this.startDate = startDate;
         this.endDate = endDate;
         this.title = title;
