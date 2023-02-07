@@ -28,14 +28,16 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
-        for (File file : Objects.requireNonNull(directory.listFiles())) {
+        checkDirectoryForNull();
+        for (File file : directory.listFiles()) {
             file.delete();
         }
     }
 
     @Override
     public int size() {
-        return Objects.requireNonNull(directory.list()).length;
+        checkDirectoryForNull();
+        return directory.list().length;
     }
 
     @Override
@@ -90,10 +92,17 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected List<Resume> doGetAll() {
-        File[] files = Objects.requireNonNull(directory.listFiles());
+        checkDirectoryForNull();
+        File[] files = directory.listFiles();
         return Arrays.stream(files)
                 .filter(File::isFile)
                 .map(this::doGet)
                 .collect(Collectors.toList());
+    }
+
+    private void checkDirectoryForNull() {
+        if (directory == null) {
+            throw new StorageException("directory is null", null);
+        }
     }
 }
