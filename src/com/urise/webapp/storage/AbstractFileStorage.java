@@ -30,7 +30,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     public void clear() {
         checkDirectoryForNull();
         for (File file : directory.listFiles()) {
-            file.delete();
+            doDelete(file);
         }
     }
 
