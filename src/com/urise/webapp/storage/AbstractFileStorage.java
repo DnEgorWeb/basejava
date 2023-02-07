@@ -4,9 +4,7 @@ import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -69,17 +67,14 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         }
     }
 
+    protected abstract Resume doRead(File file) throws IOException;
+
     protected abstract void doWrite(Resume r, File file) throws IOException;
 
     @Override
     protected Resume doGet(File file) {
         try {
-            try (FileInputStream fis = new FileInputStream(file.getAbsolutePath());
-                 ObjectInputStream ois = new ObjectInputStream(fis)) {
-                return (Resume) ois.readObject();
-            } catch (ClassNotFoundException e) {
-                throw new StorageException("ClassNotFoundException", file.getName(), e);
-            }
+            return doRead(file);
         } catch (IOException e) {
             throw new StorageException("IO error", file.getName(), e);
         }
