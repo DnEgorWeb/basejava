@@ -33,7 +33,11 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     public int size() {
-        return getCheckedListFiles().size();
+        String[] fileList = directory.list();
+        if (fileList == null) {
+            throw new StorageException("Failed to get file names", null);
+        }
+        return fileList.length;
     }
 
     @Override
@@ -98,7 +102,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         }
         File[] files = directory.listFiles();
         if (files == null) {
-            throw new StorageException("not a directory", null);
+            throw new StorageException("failed to get files", null);
         }
         return Arrays.asList(files);
     }
