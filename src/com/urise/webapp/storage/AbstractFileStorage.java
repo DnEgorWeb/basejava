@@ -26,7 +26,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
-        checkDirectoryForNull();
+        getCheckedListFiles();
         for (File file : directory.listFiles()) {
             doDelete(file);
         }
@@ -34,7 +34,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     public int size() {
-        checkDirectoryForNull();
+        getCheckedListFiles();
         return directory.list().length;
     }
 
@@ -90,7 +90,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected List<Resume> doGetAll() {
-        checkDirectoryForNull();
+        getCheckedListFiles();
         File[] files = directory.listFiles();
         return Arrays.stream(files)
                 .filter(File::isFile)
@@ -98,7 +98,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
                 .collect(Collectors.toList());
     }
 
-    private void checkDirectoryForNull() {
+    private void getCheckedListFiles() {
         if (directory == null) {
             throw new StorageException("directory is null", null);
         }
