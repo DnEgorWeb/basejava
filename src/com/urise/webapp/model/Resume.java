@@ -1,11 +1,13 @@
 package com.urise.webapp.model;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Initial resume class
  */
-public class Resume implements Comparable<Resume> {
+public class Resume implements Comparable<Resume>, Serializable {
+    private static final long serialVersionUID = 1L;
 
     private final String uuid;
     private String fullName;
@@ -43,12 +45,20 @@ public class Resume implements Comparable<Resume> {
         return new TreeMap<>(contacts);
     }
 
+    public void addContact(ContactType type, String value) {
+        contacts.put(type, value);
+    }
+
     public void setContacts(Map<ContactType, String> contacts) {
         this.contacts = contacts;
     }
 
     public Map<SectionType, AbstractSection> getSections() {
         return new TreeMap<>(sections);
+    }
+
+    public void addSection(SectionType type, AbstractSection section) {
+        sections.put(type, section);
     }
 
     public void setSections(Map<SectionType, AbstractSection> sections) {
