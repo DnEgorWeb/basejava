@@ -23,6 +23,10 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         this.directory = directory;
     }
 
+    protected abstract Resume doRead(InputStream is) throws IOException;
+
+    protected abstract void doWrite(Resume r, OutputStream os) throws IOException;
+
     @Override
     public void clear() {
         for (File file : getCheckedListFiles()) {
@@ -60,17 +64,8 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected void doSave(Resume r, File file) {
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            throw new StorageException("IO error", file.getName(), e);
-        }
         doUpdate(r, file);
     }
-
-    protected abstract Resume doRead(InputStream is) throws IOException;
-
-    protected abstract void doWrite(Resume r, OutputStream os) throws IOException;
 
     @Override
     protected Resume doGet(File file) {
