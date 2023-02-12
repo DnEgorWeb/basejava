@@ -43,7 +43,7 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
 
     @Override
     protected Path getSearchKey(String uuid) {
-        return Paths.get(uuid);
+        return directory.resolve(Paths.get(uuid));
     }
 
     @Override
@@ -63,7 +63,7 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
     @Override
     protected void doUpdate(Resume r, Path path) {
         try {
-            doWrite(r, new BufferedOutputStream(new FileOutputStream(path.toFile())));
+            doWrite(r, new BufferedOutputStream(Files.newOutputStream(directory.resolve(path))));
         } catch (IOException e) {
             throw new StorageException("Path write error", r.getUuid(), e);
         }
@@ -89,9 +89,8 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
 
     @Override
     public int size() {
-        try {
-            long size = Files.size(directory);
-            return Math.toIntExact(size);
+        try (Stream<Path> stream = Files.list(directory)) {
+            return Math.toIntExact(stream.count());
         } catch (IOException e) {
             throw new StorageException("Path size error", null, e);
         }
