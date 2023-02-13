@@ -39,13 +39,13 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     protected Path getSearchKey(String uuid) {
-        return directory.resolve(Paths.get(uuid));
+        return directory.resolve(uuid);
     }
 
     @Override
     protected Resume doGet(Path path) {
         try {
-            return serializer.doRead(new BufferedInputStream(new FileInputStream(path.toFile())));
+            return serializer.doRead(new BufferedInputStream(Files.newInputStream(path)));
         } catch (IOException e) {
             throw new StorageException("Path read error", path.toString(), e);
         }
@@ -53,6 +53,11 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     protected void doSave(Resume r, Path path) {
+        try {
+            path.toFile().createNewFile();
+        } catch (IOException e) {
+            throw new StorageException("IO error", path.toString(), e);
+        }
         doUpdate(r, path);
     }
 

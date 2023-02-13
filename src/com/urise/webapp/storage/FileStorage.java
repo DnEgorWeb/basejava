@@ -60,6 +60,11 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     protected void doSave(Resume r, File file) {
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            throw new StorageException("IO error", file.getName(), e);
+        }
         doUpdate(r, file);
     }
 
