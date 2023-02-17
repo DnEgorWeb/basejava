@@ -7,7 +7,9 @@ import java.util.Objects;
 public class ListSection extends AbstractSection {
     private static final long serialVersionUID = 1L;
 
-    private final List<String> list;
+    private List<String> list;
+
+    public ListSection() {}
 
     public ListSection(List<String> list) {
         Objects.requireNonNull(list, "list must not be null");
