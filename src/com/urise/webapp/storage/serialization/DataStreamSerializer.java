@@ -23,13 +23,19 @@ public class DataStreamSerializer implements StreamSerializer {
             for (int i = 0; i < sectionsSize; i++) {
                 SectionType sectionType = SectionType.valueOf(dis.readUTF());
                 String className = dis.readUTF();
-                AbstractSection section = null;
-                if (className.equals(ListSection.class.getName())) {
-                    section = new ListSection(readList(dis));
-                } else if (className.equals(TextSection.class.getName())) {
-                    section = new TextSection(dis.readUTF());
-                } else if (className.equals(CompanySection.class.getName())) {
-                    section = new CompanySection(readCompanies(dis));
+                AbstractSection section;
+                switch (className) {
+                    case "ListSection":
+                        section = new ListSection(readList(dis));
+                        break;
+                    case "TextSection":
+                        section = new TextSection(dis.readUTF());
+                        break;
+                    case "CompanySection":
+                        section = new CompanySection(readCompanies(dis));
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected section type");
                 }
                 resume.addSection(sectionType, section);
             }
@@ -115,7 +121,7 @@ public class DataStreamSerializer implements StreamSerializer {
     }
 
     private void writeListSection(DataOutputStream dos, ListSection section) throws IOException {
-        dos.writeUTF(ListSection.class.getName());
+        dos.writeUTF(ListSection.class.getSimpleName());
         List<String> list = section.getList();
         int listSize = list.size();
         dos.writeInt(listSize);
@@ -125,12 +131,12 @@ public class DataStreamSerializer implements StreamSerializer {
     }
 
     private void writeTextSection(DataOutputStream dos, TextSection section) throws IOException {
-        dos.writeUTF(TextSection.class.getName());
+        dos.writeUTF(TextSection.class.getSimpleName());
         dos.writeUTF(section.getText());
     }
 
     private void writeCompanySection(DataOutputStream dos, CompanySection section) throws IOException {
-        dos.writeUTF(CompanySection.class.getName());
+        dos.writeUTF(CompanySection.class.getSimpleName());
         writeCompanies(dos, section.getCompanies());
     }
 
