@@ -105,16 +105,20 @@ public class DataStreamSerializer implements StreamSerializer {
 
     private void writeSections(DataOutputStream dos, Map<SectionType, AbstractSection> sections) throws IOException {
         writeWithException(dos, sections.entrySet(), (Map.Entry<SectionType, AbstractSection> entry) -> {
+            SectionType sectionType = entry.getKey();
             dos.writeUTF(entry.getKey().name());
             AbstractSection section = entry.getValue();
-            switch (section.getClass().getSimpleName()) {
-                case "ListSection":
+            switch (sectionType) {
+                case ACHIEVEMENT:
+                case QUALIFICATIONS:
                     writeListSection(dos, (ListSection) section);
                     break;
-                case "TextSection":
+                case PERSONAL:
+                case OBJECTIVE:
                     writeTextSection(dos, (TextSection) section);
                     break;
-                case "CompanySection":
+                case EXPERIENCE:
+                case EDUCATION:
                     writeCompanySection(dos, (CompanySection) section);
                     break;
                 default:
