@@ -13,34 +13,43 @@ public class DataStreamSerializer implements StreamSerializer {
             String uuid = dis.readUTF();
             String fullName = dis.readUTF();
             Resume resume = new Resume(uuid, fullName);
-            readWithException(dis, (int contactsSize) -> {
-                for (int i = 0; i < contactsSize; i++) {
-                    resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
-                }
+            readWithException(dis, () -> {
+                resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
                 return null;
             });
-            readWithException(dis, (int sectionsSize) -> {
-                for (int i = 0; i < sectionsSize; i++) {
-                    SectionType sectionType = SectionType.valueOf(dis.readUTF());
-                    AbstractSection section;
-                    switch (sectionType) {
-                        case ACHIEVEMENT:
-                        case QUALIFICATIONS:
-                            section = new ListSection(readList(dis));
-                            break;
-                        case PERSONAL:
-                        case OBJECTIVE:
-                            section = new TextSection(dis.readUTF());
-                            break;
-                        case EDUCATION:
-                        case EXPERIENCE:
-                            section = new CompanySection(readCompanies(dis));
-                            break;
-                        default:
-                            throw new IllegalStateException("Unexpected section type");
-                    }
-                    resume.addSection(sectionType, section);
+            readWithException(dis, () -> {
+                SectionType sectionType = SectionType.valueOf(dis.readUTF());
+                AbstractSection section;
+                switch (sectionType) {
+                    case ACHIEVEMENT:
+                    case QUALIFICATIONS:
+                        section = new ListSection(readList(dis, dis::readUTF));
+                        break;
+                    case PERSONAL:
+                    case OBJECTIVE:
+                        section = new TextSection(dis.readUTF());
+                        break;
+                    case EDUCATION:
+                    case EXPERIENCE:
+                        section = new CompanySection(readList(dis, () -> {
+                            String companyName = dis.readUTF();
+                            String websiteNullMarker = dis.readUTF();
+                            String website = websiteNullMarker.equals("null") ? null : dis.readUTF();
+                            return new Company(companyName, website, readList(dis, () -> {
+                                LocalDate startDate = LocalDate.parse(dis.readUTF());
+                                String endDateNullMarker = dis.readUTF();
+                                LocalDate endDate = endDateNullMarker.equals("null") ? null : LocalDate.parse(dis.readUTF());
+                                String title = dis.readUTF();
+                                String descriptionNullMarker = dis.readUTF();
+                                String description = descriptionNullMarker.equals("null") ? null : dis.readUTF();
+                                return new Company.Period(startDate, endDate, title, description);
+                            }));
+                        }));
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected section type");
                 }
+                resume.addSection(sectionType, section);
                 return null;
             });
             return resume;
@@ -57,45 +66,13 @@ public class DataStreamSerializer implements StreamSerializer {
         }
     }
 
-    private List<String> readList(DataInputStream dis) throws IOException {
-        return readWithException(dis, (int listSize) -> {
-            List<String> list = new ArrayList<>();
-            for (int j = 0; j < listSize; j++) {
-                String val = dis.readUTF();
-                list.add(val);
-            }
-            return list;
-        });
-    }
-
-    private List<Company> readCompanies(DataInputStream dis) throws IOException {
-        return readWithException(dis, (int companiesSize) -> {
-            List<Company> companies = new ArrayList<>();
-            for (int k = 0; k < companiesSize; k++) {
-                String name = dis.readUTF();
-                String websiteNullMarker = dis.readUTF();
-                String website = websiteNullMarker.equals("null") ? null : dis.readUTF();
-                List<Company.Period> periods = readPeriods(dis);
-                companies.add(new Company(name, website, periods));
-            }
-            return companies;
-        });
-    }
-
-    private List<Company.Period> readPeriods(DataInputStream dis) throws IOException {
-        return readWithException(dis, (int periodsSize) -> {
-            List<Company.Period> periods = new ArrayList<>();
-            for (int l = 0; l < periodsSize; l++) {
-                LocalDate startDate = LocalDate.parse(dis.readUTF());
-                String endDateNullMarker = dis.readUTF();
-                LocalDate endDate = endDateNullMarker.equals("null") ? null : LocalDate.parse(dis.readUTF());
-                String title = dis.readUTF();
-                String descriptionNullMarker = dis.readUTF();
-                String description = descriptionNullMarker.equals("null") ? null : dis.readUTF();
-                periods.add(new Company.Period(startDate, endDate, title, description));
-            }
-            return periods;
-        });
+    private <T> List<T> readList(DataInputStream dis, ThrowingReader<T> reader) throws IOException {
+        int listSize = dis.readInt();
+        List<T> list = new ArrayList<>();
+        for (int i = 0; i < listSize; i++) {
+            list.add(reader.read());
+        }
+        return list;
     }
 
     private void writeContacts(DataOutputStream dos, Map<ContactType, String> contacts) throws IOException {
@@ -166,8 +143,11 @@ public class DataStreamSerializer implements StreamSerializer {
         }
     }
 
-    private <T> T readWithException(DataInputStream dis, ThrowingSupplier<T> supplier) throws IOException {
-        return supplier.get(dis.readInt());
+    private <T> void readWithException(DataInputStream dis, ThrowingSupplier<T> supplier) throws IOException {
+        int size = dis.readInt();
+        for (int i = 0; i < size; i++) {
+            supplier.get();
+        }
     }
 
     private <T> void writeWithException(DataOutputStream dos, Collection<T> collection, ThrowingConsumer<? super T> action) throws IOException {
@@ -180,11 +160,16 @@ public class DataStreamSerializer implements StreamSerializer {
 
     @FunctionalInterface
     public interface ThrowingSupplier<T> {
-        T get(int size) throws IOException;
+        T get() throws IOException;
     }
 
     @FunctionalInterface
     interface ThrowingConsumer<T> {
         void cb(T action) throws IOException;
+    }
+
+    @FunctionalInterface
+    interface ThrowingReader<T> {
+        T read() throws IOException;
     }
 }
