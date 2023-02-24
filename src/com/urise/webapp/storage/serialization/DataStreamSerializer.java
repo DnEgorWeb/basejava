@@ -22,16 +22,18 @@ public class DataStreamSerializer implements StreamSerializer {
             readWithException(dis, (int sectionsSize) -> {
                 for (int i = 0; i < sectionsSize; i++) {
                     SectionType sectionType = SectionType.valueOf(dis.readUTF());
-                    String className = dis.readUTF();
                     AbstractSection section;
-                    switch (className) {
-                        case "ListSection":
+                    switch (sectionType) {
+                        case ACHIEVEMENT:
+                        case QUALIFICATIONS:
                             section = new ListSection(readList(dis));
                             break;
-                        case "TextSection":
+                        case PERSONAL:
+                        case OBJECTIVE:
                             section = new TextSection(dis.readUTF());
                             break;
-                        case "CompanySection":
+                        case EDUCATION:
+                        case EXPERIENCE:
                             section = new CompanySection(readCompanies(dis));
                             break;
                         default:
@@ -128,18 +130,15 @@ public class DataStreamSerializer implements StreamSerializer {
     }
 
     private void writeListSection(DataOutputStream dos, ListSection section) throws IOException {
-        dos.writeUTF(ListSection.class.getSimpleName());
         List<String> list = section.getList();
         writeWithException(dos, list, dos::writeUTF);
     }
 
     private void writeTextSection(DataOutputStream dos, TextSection section) throws IOException {
-        dos.writeUTF(TextSection.class.getSimpleName());
         dos.writeUTF(section.getText());
     }
 
     private void writeCompanySection(DataOutputStream dos, CompanySection section) throws IOException {
-        dos.writeUTF(CompanySection.class.getSimpleName());
         writeCompanies(dos, section.getCompanies());
     }
 
