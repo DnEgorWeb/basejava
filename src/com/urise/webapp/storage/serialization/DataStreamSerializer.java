@@ -66,11 +66,11 @@ public class DataStreamSerializer implements StreamSerializer {
         }
     }
 
-    private <T> List<T> readList(DataInputStream dis, ThrowingReader<T> reader) throws IOException {
+    private <T> List<T> readList(DataInputStream dis, ThrowingSupplier<T> reader) throws IOException {
         int listSize = dis.readInt();
         List<T> list = new ArrayList<>();
         for (int i = 0; i < listSize; i++) {
-            list.add(reader.read());
+            list.add(reader.get());
         }
         return list;
     }
@@ -166,10 +166,5 @@ public class DataStreamSerializer implements StreamSerializer {
     @FunctionalInterface
     interface ThrowingConsumer<T> {
         void cb(T action) throws IOException;
-    }
-
-    @FunctionalInterface
-    interface ThrowingReader<T> {
-        T read() throws IOException;
     }
 }
