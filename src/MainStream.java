@@ -11,13 +11,13 @@ public class MainStream {
     }
 
     int minValue(int[] values) {
-        final double[] index = {0};
         return IntStream.of(values)
                 .distinct()
-                .map(i -> -i)
                 .sorted()
-                .map(i -> (int) (-i * Math.pow(10, index[0]++)))
-                .sum();
+                .reduce(0, (acc, i) -> {
+                    int l = (int) Math.floor(Math.log10(i) + 1);
+                    return acc * (int) Math.pow(10, l) + i;
+                });
     }
 
     List<Integer> oddOrEven(List<Integer> integers) {
