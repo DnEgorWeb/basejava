@@ -22,9 +22,8 @@ public class MainStream {
 
     List<Integer> oddOrEven(List<Integer> integers) {
         boolean isEven = integers.stream().reduce(0, Integer::sum) % 2 == 0;
-        return IntStream.range(0, integers.size())
-                .filter(i -> (isEven && i % 2 == 0) || (!isEven && i % 2 != 0))
-                .mapToObj(integers::get)
+        return integers.stream()
+                .filter(i -> isEven == (i % 2 != 0))
                 .collect(Collectors.toList());
     }
 }
