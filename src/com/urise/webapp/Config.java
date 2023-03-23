@@ -31,7 +31,7 @@ public class Config {
             dbUser = props.getProperty("db.user");
             dbUrl = props.getProperty("db.url");
             dbPassword = props.getProperty("db.password");
-            String scriptPath = props.getProperty("sql.load.script");
+            String scriptPath = props.getProperty("sql.load.script"); // optional prop
             if (scriptPath != null) {
                 launchSqlScript = String.join("", Files.readAllLines(Paths.get(scriptPath), Charset.defaultCharset()));
             } else {
