@@ -1,7 +1,6 @@
 package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.NotExistStorageException;
-import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 import com.urise.webapp.sql.SQLHelper;
 
@@ -86,14 +85,12 @@ public class SqlStorage implements Storage {
 
     @Override
     public int size() {
-        Integer size = sqlHelper.query("SELECT COUNT(*) FROM resume", ps -> {
+        return sqlHelper.query("SELECT COUNT(*) FROM resume", ps -> {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1);
             }
-            throw new StorageException("Expected to return size", null);
+            return 0;
         });
-        assert size != null;
-        return size;
     }
 }
