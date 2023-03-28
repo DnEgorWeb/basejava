@@ -19,11 +19,7 @@ public class SQLHelper {
             PreparedStatement ps = conn.prepareStatement(statement)) {
             return cb.call(ps);
         } catch (SQLException e) {
-            if (e.getSQLState().equals("23505")) {
-                throw new ExistStorageException(null);
-            } else {
-                throw new StorageException(e);
-            }
+            throw getException(e);
         }
     }
 
@@ -36,11 +32,7 @@ public class SQLHelper {
                 return res;
             } catch (SQLException e) {
                 conn.rollback();
-                if (e.getSQLState().equals("23505")) {
-                    throw new ExistStorageException(null);
-                } else {
-                    throw new StorageException(e);
-                }
+                throw getException(e);
             }
         } catch (SQLException e) {
             throw new StorageException(e);
@@ -55,5 +47,13 @@ public class SQLHelper {
     @FunctionalInterface
     public interface Transaction<T> {
         T call(Connection conn) throws SQLException;
+    }
+
+    private StorageException getException(SQLException e) {
+        if (e.getSQLState().equals("23505")) {
+            return new ExistStorageException(null);
+        } else {
+            return new StorageException(e);
+        }
     }
 }
