@@ -3,6 +3,7 @@ package com.urise.webapp.storage;
 import com.urise.webapp.Config;
 import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
+import com.urise.webapp.model.ContactType;
 import com.urise.webapp.model.Resume;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,7 +11,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -95,11 +98,22 @@ abstract class AbstractStorageTest {
             storage.save(r);
             assumeTrue(storage.size() == 1);
             assumeTrue(r.equals(storage.get(r.getUuid())));
-            Resume r1 = ResumeTestData.buildResume(r.getUuid(), "mock");
+            Resume r1 = ResumeTestData.buildResume(r.getUuid(), "mock2");
+            Map<ContactType, String> contacts = new HashMap<>();
+            contacts.put(ContactType.PHONE, "mock phone");
+            contacts.put(ContactType.SKYPE, "mock skype");
+            contacts.put(ContactType.EMAIL, "mock email");
+            contacts.put(ContactType.LINKEDIN, "mock linkedin");
+            contacts.put(ContactType.GITHUB, "mock github");
+            contacts.put(ContactType.STACKOVERFLOW, "mock stackoverflow");
+            contacts.put(ContactType.HOMEPAGE, "mock website");
+            r1.setContacts(contacts);
             storage.update(r1);
             assertSize(1);
-            assertEquals(r1, storage.get(r.getUuid()));
-            assertNotSame(r, storage.get(r.getUuid()));
+            Resume storageResume = storage.get(r.getUuid());
+            assertEquals(r1, storageResume);
+            assertNotSame(r, storageResume);
+            assertEquals(contacts, storageResume.getContacts());
         }
     }
 
