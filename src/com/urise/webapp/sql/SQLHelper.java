@@ -27,8 +27,33 @@ public class SQLHelper {
         }
     }
 
+    public <T> T transactionalQuery(Transaction<T> cb) {
+        try (Connection conn = connectionFactory.getConnection()) {
+            try {
+                conn.setAutoCommit(false);
+                T res = cb.call(conn);
+                conn.commit();
+                return res;
+            } catch (SQLException e) {
+                conn.rollback();
+                if (e.getSQLState().equals("23505")) {
+                    throw new ExistStorageException(null);
+                } else {
+                    throw new StorageException(e);
+                }
+            }
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+    }
+
     @FunctionalInterface
     public interface Supplier<T> {
         T call(PreparedStatement ps) throws SQLException;
+    }
+
+    @FunctionalInterface
+    public interface Transaction<T> {
+        T call(Connection conn) throws SQLException;
     }
 }

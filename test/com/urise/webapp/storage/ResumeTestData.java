@@ -1,17 +1,21 @@
 package com.urise.webapp.storage;
 
+import com.urise.webapp.model.ContactType;
 import com.urise.webapp.model.Resume;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ResumeTestData {
     public static Resume buildResume(String uuid, String fullName) {
-//        Map<ContactType, String> contacts = new HashMap<>();
-//        contacts.put(ContactType.PHONE, "+7(921) 855-0482");
-//        contacts.put(ContactType.SKYPE, "skype:grigory.kislin");
-//        contacts.put(ContactType.EMAIL, "gkislin@yandex.ru");
-//        contacts.put(ContactType.LINKEDIN, "https://www.linkedin.com/in/gkislin");
-//        contacts.put(ContactType.GITHUB, "https://github.com/gkislin");
-//        contacts.put(ContactType.STACKOVERFLOW, "https://stackoverflow.com/users/548473");
-//        contacts.put(ContactType.HOMEPAGE, "http://gkislin.ru/");
+        Map<ContactType, String> contacts = new HashMap<>();
+        contacts.put(ContactType.PHONE, "+7(921) 855-0482");
+        contacts.put(ContactType.SKYPE, "skype:grigory.kislin");
+        contacts.put(ContactType.EMAIL, "gkislin@yandex.ru");
+        contacts.put(ContactType.LINKEDIN, "https://www.linkedin.com/in/gkislin");
+        contacts.put(ContactType.GITHUB, "https://github.com/gkislin");
+        contacts.put(ContactType.STACKOVERFLOW, "https://stackoverflow.com/users/548473");
+        contacts.put(ContactType.HOMEPAGE, "http://gkislin.ru/");
 //        Map<SectionType, AbstractSection> sections = new HashMap<>();
 //        sections.put(SectionType.OBJECTIVE, new TextSection("Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям"));
 //        sections.put(SectionType.PERSONAL, new TextSection("Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры."));
@@ -37,7 +41,7 @@ public class ResumeTestData {
 //        )));
 
         Resume r = new Resume(uuid, fullName);
-//        r.setContacts(contacts);
+        r.setContacts(contacts);
 //        r.setSections(sections);
 
         return r;
