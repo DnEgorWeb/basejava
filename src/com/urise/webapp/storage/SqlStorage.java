@@ -6,9 +6,7 @@ import com.urise.webapp.model.Resume;
 import com.urise.webapp.sql.SQLHelper;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SqlStorage implements Storage {
     private final SQLHelper sqlHelper;
@@ -61,7 +59,7 @@ public class SqlStorage implements Storage {
 
     @Override
     public Resume get(String uuid) {
-        return sqlHelper.query("" + " SELECT * FROM resume r " + " LEFT JOIN contact c " + " ON r.uuid = c.resume_uuid " + " WHERE r.uuid = ?", ps -> {
+        return sqlHelper.query("SELECT * FROM resume r LEFT JOIN contact c ON r.uuid = c.resume_uuid WHERE r.uuid = ?", ps -> {
             ps.setString(1, uuid);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
@@ -69,9 +67,7 @@ public class SqlStorage implements Storage {
             }
             Resume r = new Resume(uuid, rs.getString("full_name"));
             do {
-                String value = rs.getString("value");
-                ContactType type = ContactType.valueOf(rs.getString("type"));
-                r.addContact(type, value);
+                addContact(r, rs);
             } while (rs.next());
 
             return r;
@@ -92,13 +88,19 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-        return sqlHelper.query("SELECT * FROM resume ORDER BY full_name, uuid ASC", ps -> {
+        return sqlHelper.query("SELECT * FROM resume r LEFT JOIN contact c ON r.uuid = c.resume_uuid ORDER BY r.full_name, r.uuid ASC", ps -> {
             ResultSet rs = ps.executeQuery();
-            List<Resume> list = new ArrayList<>();
+            Map<String, Resume> map = new LinkedHashMap<>();
             while (rs.next()) {
-                list.add(new Resume(rs.getString("uuid"), rs.getString("full_name")));
+                String uuid = rs.getString("uuid");
+                Resume r = map.get(uuid);
+                if (r == null) {
+                    r = new Resume(uuid, rs.getString("full_name"));
+                    map.put(r.getUuid(), r);
+                }
+                addContact(r, rs);
             }
-            return list;
+            return new ArrayList<>(map.values());
         });
     }
 
@@ -108,6 +110,12 @@ public class SqlStorage implements Storage {
             ResultSet rs = ps.executeQuery();
             return rs.next() ? rs.getInt(1) : 0;
         });
+    }
+
+    private void addContact(Resume r, ResultSet rs) throws SQLException {
+        String value = rs.getString("value");
+        ContactType type = ContactType.valueOf(rs.getString("type"));
+        r.addContact(type, value);
     }
 
     private void insertContacts(Connection conn, Resume r) throws SQLException {
