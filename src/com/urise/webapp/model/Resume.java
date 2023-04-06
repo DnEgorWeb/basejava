@@ -48,6 +48,10 @@ public class Resume implements Comparable<Resume>, Serializable {
         this.fullName = fullName;
     }
 
+    public String getContact(ContactType type) {
+        return contacts.get(type);
+    }
+
     public Map<ContactType, String> getContacts() {
         return new TreeMap<>(contacts);
     }
