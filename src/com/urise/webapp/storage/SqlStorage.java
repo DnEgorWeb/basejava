@@ -3,6 +3,7 @@ package com.urise.webapp.storage;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.*;
 import com.urise.webapp.sql.SQLHelper;
+import com.urise.webapp.util.JsonParser;
 
 import java.sql.*;
 import java.util.*;
@@ -164,19 +165,7 @@ public class SqlStorage implements Storage {
         if (type != null) {
             SectionType st = SectionType.valueOf(type);
             String value = rs.getString("value");
-            switch (st) {
-                case ACHIEVEMENT:
-                case QUALIFICATIONS:
-                    r.addSection(st, new ListSection(new ArrayList<>(Arrays.asList(value.split("\n")))));
-                    break;
-                case OBJECTIVE:
-                case PERSONAL:
-                    r.addSection(st, new TextSection(value));
-                    break;
-                case EXPERIENCE:
-                case EDUCATION:
-                    throw new IllegalStateException("Unexpected section type");
-            }
+            r.addSection(st, JsonParser.read(value, AbstractSection.class));
         }
     }
 
@@ -197,24 +186,8 @@ public class SqlStorage implements Storage {
             for (Map.Entry<SectionType, AbstractSection> e : r.getSections().entrySet()) {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, e.getKey().name());
-                SectionType type = SectionType.valueOf(e.getKey().name());
-                String value = "";
-                switch (type) {
-                    case ACHIEVEMENT:
-                    case QUALIFICATIONS:
-                        ListSection ls = (ListSection) e.getValue();
-                        value = String.join("\n", ls.getList());
-                        break;
-                    case OBJECTIVE:
-                    case PERSONAL:
-                        TextSection ts = (TextSection) e.getValue();
-                        value = ts.getText();
-                        break;
-                    case EXPERIENCE:
-                    case EDUCATION:
-                        throw new IllegalStateException("Unexpected section type");
-                }
-                ps.setString(3, value);
+                AbstractSection section = e.getValue();
+                ps.setString(3, JsonParser.write(section, AbstractSection.class));
                 ps.addBatch();
             }
             ps.executeBatch();
