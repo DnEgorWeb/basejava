@@ -4,6 +4,8 @@ import com.urise.webapp.Config;
 import com.urise.webapp.model.ContactType;
 import com.urise.webapp.model.Resume;
 import com.urise.webapp.storage.Storage;
+import com.urise.webapp.util.JsonParser;
+import com.urise.webapp.web.validation.ResumeFormValidation;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -14,11 +16,13 @@ import java.io.IOException;
 
 public class ResumeServlet extends HttpServlet {
     private Storage storage;
+    private ResumeFormValidation formValidation;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         storage = Config.get().getStorage();
+        formValidation = new ResumeFormValidation();
     }
 
     @Override
@@ -32,6 +36,11 @@ public class ResumeServlet extends HttpServlet {
         }
         Resume r;
         switch (action) {
+            case "create":
+                req.setAttribute("resume", ResumeForm.buildEmptyForm());
+                req.setAttribute("errors", ResumeForm.buildEmptyForm());
+                req.getRequestDispatcher("/WEB-INF/jsp/create.jsp").forward(req, res);
+                return;
             case "delete":
                 storage.delete(uuid);
                 res.sendRedirect("resume");
@@ -50,6 +59,24 @@ public class ResumeServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        ResumeForm form = JsonParser.read(req.getParameter("resume"), ResumeForm.class);
+        ResumeForm errors = formValidation.validate("resume", form);
+
+        if (!errors.isEmpty()) {
+            req.setAttribute("resume", form);
+            req.setAttribute("errors", errors);
+            req.getRequestDispatcher("/WEB-INF/jsp/create.jsp").forward(req, res);
+            return;
+        }
+
+        Resume r = form.buildResume();
+        storage.save(r);
+        res.sendRedirect("resume");
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         String uuid = req.getParameter("uuid");
         String fullName = req.getParameter("fullName");

@@ -23,6 +23,10 @@ public class CompanySection extends AbstractSection {
         return companies;
     }
 
+    public void setCompanies(List<Company> companies) {
+        this.companies = companies;
+    }
+
     @Override
     public String toString() {
         return "CompanySection{" +

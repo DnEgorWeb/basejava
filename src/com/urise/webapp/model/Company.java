@@ -32,12 +32,24 @@ public class Company implements Serializable {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getWebsite() {
         return website;
     }
 
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
     public List<Period> getPeriods() {
         return periods;
+    }
+
+    public void setPeriods(List<Period> periods) {
+        this.periods = periods;
     }
 
     @Override
@@ -86,16 +98,32 @@ public class Company implements Serializable {
             return startDate;
         }
 
+        public void setStartDate(LocalDate startDate) {
+            this.startDate = startDate;
+        }
+
         public LocalDate getEndDate() {
             return endDate;
+        }
+
+        public void setEndDate(LocalDate endDate) {
+            this.endDate = endDate;
         }
 
         public String getTitle() {
             return title;
         }
 
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
         public String getDescription() {
             return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
         }
 
         @Override

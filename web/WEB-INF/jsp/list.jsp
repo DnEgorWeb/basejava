@@ -6,12 +6,13 @@
 <html>
 <head>
  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
- <link rel="stylesheet" href="css/style.css">
+ <link rel="stylesheet" href="css/styles.css">
  <title>All resume list</title>
 </head>
 <body>
 <jsp:include page="fragments/header.jsp"/>
 <section>
+    <h2><a href="resume?action=create">Add Resume</a></h2>
     <table border="1" cellpadding="8" cellspacing="0">
         <tr>
             <th>Name</th>
