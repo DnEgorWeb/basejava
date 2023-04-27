@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ResumeForm implements Serializable {
+    private String uuid;
     private String fullName;
     private Map<ContactType, String> contacts;
     private Map<SectionType, String> stringSections;
@@ -15,9 +16,9 @@ public class ResumeForm implements Serializable {
     private Map<SectionType, List<String>> listSections;
     private Map<SectionType, List<CompanyForm>> companySections;
 
-    // for returning initial create form
     public static ResumeForm buildEmptyForm() {
         ResumeForm form = new ResumeForm();
+        form.setUuid(null);
         form.setFullName(null);
         form.setContacts(new HashMap<ContactType, String>() {{
             for (ContactType ct : ContactType.values()) {
@@ -39,32 +40,50 @@ public class ResumeForm implements Serializable {
         return form;
     }
 
-    // for returning existing resumes (view / put)
     public static ResumeForm buildFrom(Resume r) {
-        ResumeForm form = new ResumeForm();
+        ResumeForm form = ResumeForm.buildEmptyForm();
+        form.setUuid(r.getUuid());
         form.setFullName(r.getFullName());
-        form.setContacts(r.getContacts());
-        form.setStringSections(new HashMap<SectionType, String>() {{
-            put(SectionType.PERSONAL, ((TextSection) r.getSection(SectionType.PERSONAL)).getText());
-            put(SectionType.OBJECTIVE, ((TextSection) r.getSection(SectionType.OBJECTIVE)).getText());
-        }});
-        form.setListSections(new HashMap<SectionType, List<String>>() {{
-            put(SectionType.ACHIEVEMENT, ((ListSection) r.getSection(SectionType.ACHIEVEMENT)).getList());
-            put(SectionType.QUALIFICATIONS, ((ListSection) r.getSection(SectionType.QUALIFICATIONS)).getList());
-        }});
+        r.getContacts().forEach(((contactType, value) -> {
+            if (!value.isEmpty()) {
+                form.contacts.put(contactType, value);
+            }
+        }));
+        if (r.getSection(SectionType.PERSONAL) != null) {
+            form.stringSections.put(SectionType.PERSONAL, ((TextSection) r.getSection(SectionType.PERSONAL)).getText());
+        }
+        if (r.getSection(SectionType.OBJECTIVE) != null) {
+            form.stringSections.put(SectionType.OBJECTIVE, ((TextSection) r.getSection(SectionType.OBJECTIVE)).getText());
+        }
+        if (r.getSection(SectionType.ACHIEVEMENT) != null) {
+            form.listSections.put(SectionType.ACHIEVEMENT, ((ListSection) r.getSection(SectionType.ACHIEVEMENT)).getList());
+        }
+        if (r.getSection(SectionType.QUALIFICATIONS) != null) {
+            form.listSections.put(SectionType.QUALIFICATIONS, ((ListSection) r.getSection(SectionType.QUALIFICATIONS)).getList());
+        }
         form.setCompanySections(new HashMap<SectionType, List<CompanyForm>>() {{
             put(SectionType.EXPERIENCE, ((CompanySection) r.getSection(SectionType.EXPERIENCE)).getCompanies().stream().map(CompanyForm::buildFrom).collect(Collectors.toList()));
-            put(SectionType.EDUCATION, ((CompanySection) r.getSection(SectionType.EXPERIENCE)).getCompanies().stream().map(CompanyForm::buildFrom).collect(Collectors.toList()));
+            put(SectionType.EDUCATION, ((CompanySection) r.getSection(SectionType.EDUCATION)).getCompanies().stream().map(CompanyForm::buildFrom).collect(Collectors.toList()));
         }});
         return form;
     }
 
     public Resume buildResume() {
         Resume r = new Resume(fullName);
-        r.setContacts(contacts);
-        stringSections.forEach((key, value) -> r.addSection(key, new TextSection(value)));
-        listSections.forEach((key, value) -> {
-            r.addSection(key, new ListSection(value));
+        contacts.forEach((contactType, value) -> {
+            if (!contacts.get(contactType).isEmpty()) {
+                r.addContact(contactType, value);
+            }
+        });
+        stringSections.forEach((key, value) -> {
+            if (!value.isEmpty()) {
+                r.addSection(key, new TextSection(value));
+            }
+        });
+        listSections.forEach((key, stringList) -> {
+            if (stringList.stream().anyMatch(str -> !str.isEmpty())) {
+                r.addSection(key, new ListSection(stringList));
+            }
         });
         companySections.forEach((key, companyForms) -> {
             List<Company> companies = new ArrayList<>();
@@ -76,12 +95,10 @@ public class ResumeForm implements Serializable {
                             period.getTitle(),
                             period.getDescription()));
                 });
-
                 companies.add(new Company(company.getName(),
                         company.getWebsite(),
                         periods));
             });
-
             r.addSection(key, new CompanySection(companies));
         });
 
@@ -91,6 +108,11 @@ public class ResumeForm implements Serializable {
     public boolean isEmpty() {
         if (fullName != null) {
             return false;
+        }
+        for (String contact : contacts.values()) {
+            if (contact != null) {
+                return false;
+            }
         }
         for (String value : stringSections.values()) {
             if (value != null) {
@@ -117,6 +139,14 @@ public class ResumeForm implements Serializable {
             }
         }
         return true;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getContact(ContactType ct) {
@@ -169,7 +199,6 @@ public class ResumeForm implements Serializable {
 
     public void setListSection(SectionType sectionType, List<String> values) {
         listSections.put(sectionType, values);
-        listSections.size();
     }
 
     public Map<SectionType, List<CompanyForm>> getCompanySections() {
@@ -182,6 +211,10 @@ public class ResumeForm implements Serializable {
 
     public List<CompanyForm> getCompanySection(SectionType sectionType) {
         return companySections.get(sectionType);
+    }
+
+    public void addCompanySection(SectionType sectionType, List<CompanyForm> companyForms) {
+        companySections.put(sectionType, companyForms);
     }
 
     public void setCompanySection(SectionType sectionType, List<CompanyForm> companyForms) {

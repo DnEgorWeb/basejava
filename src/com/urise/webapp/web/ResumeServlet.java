@@ -1,7 +1,6 @@
 package com.urise.webapp.web;
 
 import com.urise.webapp.Config;
-import com.urise.webapp.model.ContactType;
 import com.urise.webapp.model.Resume;
 import com.urise.webapp.storage.Storage;
 import com.urise.webapp.util.JsonParser;
@@ -36,25 +35,33 @@ public class ResumeServlet extends HttpServlet {
         }
         Resume r;
         switch (action) {
-            case "create":
-                req.setAttribute("resume", ResumeForm.buildEmptyForm());
-                req.setAttribute("errors", ResumeForm.buildEmptyForm());
-                req.getRequestDispatcher("/WEB-INF/jsp/create.jsp").forward(req, res);
+            case "view":
+                r = storage.get(uuid);
+                ResumeForm form = ResumeForm.buildFrom(r);
+                req.setAttribute("resume", form);
+                req.getRequestDispatcher("/WEB-INF/jsp/view.jsp").forward(req, res);
                 return;
+            case "create":
+                ResumeForm emptyForm = ResumeForm.buildEmptyForm();
+                req.setAttribute("resume", emptyForm);
+                req.setAttribute("errors", emptyForm);
+                req.setAttribute("action", "create");
+                req.getRequestDispatcher("/WEB-INF/jsp/create-edit.jsp").forward(req, res);
+                return;
+            case "edit":
+                r = storage.get(uuid);
+                req.setAttribute("resume", ResumeForm.buildFrom(r));
+                req.setAttribute("errors", ResumeForm.buildEmptyForm());
+                req.setAttribute("action", "update");
+                req.getRequestDispatcher("/WEB-INF/jsp/create-edit.jsp").forward(req, res);
+                break;
             case "delete":
                 storage.delete(uuid);
                 res.sendRedirect("resume");
                 return;
-            case "view":
-            case "edit":
-                r = storage.get(uuid);
-                break;
             default:
                 throw new IllegalArgumentException("Action " + action + " is illegal");
         }
-        req.setAttribute("resume", r);
-        req.getRequestDispatcher(("view".equals(action) ? "/WEB-INF/jsp/view.jsp" : "/WEB-INF/jsp/edit.jsp"))
-                .forward(req, res);
     }
 
     @Override
@@ -66,31 +73,18 @@ public class ResumeServlet extends HttpServlet {
         if (!errors.isEmpty()) {
             req.setAttribute("resume", form);
             req.setAttribute("errors", errors);
-            req.getRequestDispatcher("/WEB-INF/jsp/create.jsp").forward(req, res);
+            req.getRequestDispatcher("/WEB-INF/jsp/create-edit.jsp").forward(req, res);
             return;
         }
 
+        String uuid = form.getUuid();
         Resume r = form.buildResume();
-        storage.save(r);
-        res.sendRedirect("resume");
-    }
-
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        req.setCharacterEncoding("UTF-8");
-        String uuid = req.getParameter("uuid");
-        String fullName = req.getParameter("fullName");
-        Resume r = storage.get(uuid);
-        r.setFullName(fullName);
-        for (ContactType type : ContactType.values()) {
-            String value = req.getParameter(type.name());
-            if (value != null && value.trim().length() != 0) {
-                r.addContact(type, value);
-            } else {
-                r.getContacts().remove(type);
-            }
+        if (uuid != null) {
+            r.setUuid(uuid);
+            storage.update(r);
+        } else {
+            storage.save(r);
         }
-        storage.update(r);
         res.sendRedirect("resume");
     }
 }

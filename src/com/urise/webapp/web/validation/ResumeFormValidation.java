@@ -11,13 +11,13 @@ public class ResumeFormValidation implements Validator<ResumeForm, ResumeForm> {
     private final NotEmptyList notEmptyList = new NotEmptyList();
     private final CompanyForm companyValidator = new CompanyForm();
     private final Map<ContactType, List<Validator<String, String>>> contactValidators = new HashMap<ContactType, List<Validator<String, String>>>() {{
-        Validator<String, String> urlValidator = (new Url());
-        put(ContactType.EMAIL, Arrays.asList(notEmpty, new Email()));
-        put(ContactType.SKYPE, Arrays.asList(notEmpty, new Skype()));
-        put(ContactType.LINKEDIN, Arrays.asList(notEmpty, urlValidator));
-        put(ContactType.GITHUB, Arrays.asList(notEmpty, urlValidator));
-        put(ContactType.STACKOVERFLOW, Arrays.asList(notEmpty, urlValidator));
-        put(ContactType.HOMEPAGE, Arrays.asList(notEmpty, urlValidator));
+        Validator<String, String> urlValidator = new AllowEmpty(new Url());
+        put(ContactType.EMAIL, Collections.singletonList(new AllowEmpty(new Email())));
+        put(ContactType.SKYPE, Collections.singletonList(new AllowEmpty(new Skype())));
+        put(ContactType.LINKEDIN, Collections.singletonList(urlValidator));
+        put(ContactType.GITHUB, Collections.singletonList(urlValidator));
+        put(ContactType.STACKOVERFLOW, Collections.singletonList(urlValidator));
+        put(ContactType.HOMEPAGE, Collections.singletonList(urlValidator));
     }};
 
     @Override
@@ -30,11 +30,12 @@ public class ResumeFormValidation implements Validator<ResumeForm, ResumeForm> {
             contactErrors.put(contactType, validateContact(contactType, form.getContact(contactType)));
         }
         errors.setContacts(contactErrors);
-        errors.setStringSection(SectionType.PERSONAL, notEmpty.validate(SectionType.PERSONAL.getTitle(), form.getStringSection(SectionType.PERSONAL)));
-        errors.setStringSection(SectionType.OBJECTIVE, notEmpty.validate(SectionType.OBJECTIVE.getTitle(), form.getStringSection(SectionType.OBJECTIVE)));
+        Validator<String, String> notEmptyWhitespaces = new AllowEmpty(new NotEmpty());
+        errors.setStringSection(SectionType.PERSONAL, notEmptyWhitespaces.validate(SectionType.PERSONAL.getTitle(), form.getStringSection(SectionType.PERSONAL)));
+        errors.setStringSection(SectionType.OBJECTIVE, notEmptyWhitespaces.validate(SectionType.OBJECTIVE.getTitle(), form.getStringSection(SectionType.OBJECTIVE)));
 
-        errors.setListSection(SectionType.ACHIEVEMENT, Collections.singletonList(notEmptyList.validate(SectionType.ACHIEVEMENT.getTitle(), form.getListSection(SectionType.ACHIEVEMENT))));
-        errors.setListSection(SectionType.QUALIFICATIONS, Collections.singletonList(notEmptyList.validate(SectionType.QUALIFICATIONS.getTitle(), form.getListSection(SectionType.QUALIFICATIONS))));
+        errors.setListSection(SectionType.ACHIEVEMENT, Collections.singletonList(null));
+        errors.setListSection(SectionType.QUALIFICATIONS, Collections.singletonList(null));
 
         List<ResumeForm.CompanyForm> companyFormErrors = new ArrayList<>();
         for (int i = 0; i < form.getCompanySection(SectionType.EXPERIENCE).size(); i++) {
